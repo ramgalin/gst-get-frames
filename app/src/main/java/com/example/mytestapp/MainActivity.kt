@@ -1,5 +1,6 @@
 package com.example.mytestapp
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -22,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Column
 import org.freedesktop.gstreamer.GStreamer
+import java.io.File
 
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MyAppContent()
+                    MyAppContent(::onButtonClicked)
                 }
             }
         }
@@ -53,13 +55,24 @@ class MainActivity : ComponentActivity() {
             return
         }
     }
+
+    fun onButtonClicked() {
+        var nativeTest = NativeTest()
+
+        nativeTest.addTrack(
+            0,
+            File(filesDir, "sample.mp4").absolutePath
+        )
+
+        // uncomment to check if nextFrame works
+        //nativeTest.nextFrame(0)
+    }
 }
 
 @Composable
-fun MyAppContent() {
+fun MyAppContent(onButtonClicked: () -> Unit) {
     // You can use state to track whether the button is clicked
     var buttonClicked by remember { mutableStateOf(false) }
-    var nativeTest = NativeTest()
 
     Column(
         modifier = Modifier
@@ -67,15 +80,9 @@ fun MyAppContent() {
             .padding(16.dp)
     ) {
         if (buttonClicked) {
-            nativeTest.addTrack(0, "sample.mp4")
-
-            // uncomment to check if nextFrame works
-            //nativeTest.nextFrame(0)
-
-            // If button is clicked, show a message
+            onButtonClicked()
             Text("Started. Please see the logs")
         } else {
-            // If button is not clicked, show the button
             StartButton(onClick = { buttonClicked = true })
         }
     }
@@ -92,6 +99,6 @@ fun StartButton(onClick: () -> Unit) {
 @Composable
 fun MyAppContentPreview() {
     MytestappTheme {
-        MyAppContent()
+        MyAppContent(onButtonClicked = {})
     }
 }
