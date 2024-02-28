@@ -1,3 +1,5 @@
+gst-android-build/
+
 # Gradle files
 .gradle/
 build/
